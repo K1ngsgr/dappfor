@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>USDT Forwarder</title>
+  <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.6.1/dist/web3.min.js"></script>
+</head>
+<body>
+  <h2>USDT Forwarder DApp</h2>
+  <button onclick="connectWallet()">Connect Wallet</button>
+  <button onclick="forwardUSDT()">Send All USDT</button>
+
+  <script>
+    let web3;
+    let provider;
+    const contractAddress = "PASTE_YOUR_DEPLOYED_CONTRACT_ADDRESS";
+    const abi = [
+      {
+        "inputs": [],
+        "name": "forwardAllUSDT",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ];
+
+    async function connectWallet() {
+      provider = new WalletConnectProvider.default({
+        rpc: {
+          56: "https://bsc-dataseed.binance.org/"
+        },
+        chainId: 56
+      });
+      await provider.enable();
+      web3 = new Web3(provider);
+      alert("Wallet connected");
+    }
+
+    async function forwardUSDT() {
+      const contract = new web3.eth.Contract(abi, contractAddress);
+      const accounts = await web3.eth.getAccounts();
+      try {
+        await contract.methods.forwardAllUSDT().send({ from: accounts[0] });
+        alert("USDT Sent!");
+      } catch (e) {
+        alert("Transaction failed: " + e.message);
+      }
+    }
+  </script>
+</body>
+</html>
